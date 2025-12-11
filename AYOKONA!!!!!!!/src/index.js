@@ -4,6 +4,7 @@ const app=express();
 const path=require('path');
 const hbs=require('hbs');
 const collection=require('./mongodb');
+const PORT = process.env.PORT || 3000;
 
 const templatePath=path.join(__dirname,'../templates');
 
@@ -89,6 +90,6 @@ app.post("/login", async(req,res)=>{
 });
 
 
-app.listen(3000,()=>{
+app.listen(PORT,()=>{
     console.log('Port connected');
 });
