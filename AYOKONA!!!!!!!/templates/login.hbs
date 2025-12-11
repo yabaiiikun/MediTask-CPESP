@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediTask Auth</title>
+  <style>
+    body {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+    .auth-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 60px; /* increased from 40px */
+    border-radius: 16px; /* slightly larger corners */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 500px; /* increased from 380px */
+    text-align: center;
+    animation: fadeIn 0.6s ease;
+  }
+
+  .title {
+      position: absolute;
+      top: 20px;
+      font-size: 60px;
+      color: #0d47a1;
+      font-weight: bold;
+    }
+
+    h1 {
+    margin-bottom: 30px;
+    font-size: 32px; /* slightly larger heading */
+    color: #0d47a1;
+  }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input:focus {
+      border-color: #0d47a1;
+      box-shadow: 0 0 6px rgba(13,71,161,0.4);
+      outline: none;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background: #0d47a1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    input[type="submit"]:hover {
+      background: #1565c0;
+      transform: translateY(-2px);
+    }
+
+    .switch-link {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #1565c0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .switch-link:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(20px); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s forwards;
+    }
+
+    .fade-out {
+      animation: fadeOut 0.5s forwards;
+    }
+  </style>
+</head>
+<body>
+    <h1 class="title">MediTask</h1>
+  <div class="auth-container fade-in" id="authBox">
+    <!-- Login form by default -->
+    <h1>Log In</h1>
+    <form action="/login" method="post" id="loginForm">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <input type="submit" value="Log In">
+    </form>
+    <p class="switch-link" onclick="showSignUp()">Don’t have an account? Sign up</p>
+  </div>
+
+  <script>
+    function showSignUp() {
+      const box = document.getElementById("authBox");
+      box.classList.remove("fade-in");
+      box.classList.add("fade-out");
+
+      setTimeout(() => {
+        box.innerHTML = `
+          <h1>Sign Up</h1>
+          <form action="/signup" method="post" id="signUpForm">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="submit" value="Sign Up">
+          </form>
+          <p class="switch-link" onclick="showLogin()">Already have an account? Log in</p>
+        `;
+        box.classList.remove("fade-out");
+        box.classList.add("fade-in");
+      }, 500); // wait for fade-out
+    }
+
+    function showLogin() {
+      const box = document.getElementById("authBox");
+      box.classList.remove("fade-in");
+      box.classList.add("fade-out");
+
+      setTimeout(() => {
+        box.innerHTML = `
+          <h1>Log In</h1>
+          <form action="/login" method="post" id="loginForm">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="submit" value="Log In">
+          </form>
+          <p class="switch-link" onclick="showSignUp()">Don’t have an account? Sign up</p>
+        `;
+        box.classList.remove("fade-out");
+        box.classList.add("fade-in");
+      }, 500);
+    }
+  </script>
+</body>
+</html>

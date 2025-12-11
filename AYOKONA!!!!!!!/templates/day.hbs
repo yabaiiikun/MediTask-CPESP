@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <title>MediTask</title>
+    <style>
+        body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      color: #333;
+      min-height: 100vh;
+    }
+
+    nav {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.5);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #0d47a1;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      background: rgba(13, 71, 161, 0.1);
+      border: 1px solid rgba(13, 71, 161, 0.2);
+      color: #0d47a1;
+      border-radius: 10px;
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      background: #0d47a1;
+      color: white;
+      box-shadow: 0 3px 10px rgba(13, 71, 161, 0.3);
+    }
+
+    .calendar-container {
+      background: #fff;
+      border-radius: 25px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+      padding: 40px;
+      width: 1000px;
+      max-width: 100%;
+      display: flex;
+      gap: 40px;
+      transition: all 0.3s ease;
+      margin: 20px auto;
+    }
+
+    .calendar-h1 {
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      color: #006AFF;
+      margin-bottom: 30px;
+      font-size: 30px;
+      width: 100%;
+    }
+
+    .calendar-section {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .calendar-header {
+      display: flex;
+      font-weight: bold;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .calendar-header button {
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: #006AFF;
+      transition: transform 0.2s, color 0.3s;
+    }
+
+    .calendar-header button:hover {
+      transform: scale(1.2);
+      color: #004FCC;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .day-name {
+      font-weight: bold;
+      color: #006AFF;
+      font-size: 18px;
+      padding: 10px 0;
+    }
+
+    .day {
+      position: relative;
+      padding: 25px 0;
+      border-radius: 15px;
+      cursor: pointer;
+      background: #f8f9fa;
+      font-size: 18px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      transform: scale(0.95);
+      animation: fadeIn 0.4s forwards;
+    }
+
+    .day:hover {
+      background: #e9f2ff;
+      transform: scale(1.05);
+    }
+
+    .day.selected {
+      background: #006AFF;
+      color: white;
+      font-weight: 600;
+      transform: scale(1.05);
+    }
+
+    .day.today {
+      border: 3px solid #00B2FF;
+      font-weight: bold;
+    }
+
+    .indicator {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00B2FF;
+      opacity: 0;
+      animation: fadeIn 0.4s forwards 0.2s;
+    }
+
+    .today-btn {
+      background: #00B2FF;
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      align-self: center;
+      margin-bottom: 20px;
+    }
+
+    .today-btn:hover {
+      background: #0091D9;
+      transform: scale(1.05);
+    }
+
+    /* Event Section */
+    .event-section {
+      flex: 0.9;
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      height: fit-content;
+      transition: all 0.4s ease;
+    }
+
+    .event-section h3 {
+      color: #006AFF;
+      font-size: 22px;
+      margin-bottom: 20px;
+      text-align: center;
+      transition: color 0.3s;
+    }
+
+    #eventList {
+      flex: 1;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .event {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      transform: translateY(10px);
+      animation: fadeSlideIn 0.4s forwards;
+    }
+
+    .event.removing {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+
+    .event time {
+      display: block;
+      font-size: 14px;
+      color: #006AFF;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #ff4d4d;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.2s ease, color 0.2s;
+    }
+
+    .delete-btn:hover {
+      transform: scale(1.2);
+      color: #e60000;
+    }
+
+    .add-event {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      transition: all 0.3s ease;
+    }
+
+    .add-event input[type="text"],
+    .add-event input[type="time"] {
+      flex: 1;
+      min-width: 150px;
+      padding: 12px 15px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .add-event input:focus {
+      border-color: #006AFF;
+      box-shadow: 0 0 8px rgba(0, 106, 255, 0.2);
+      transform: scale(1.02);
+    }
+
+    .add-event button {
+      background: linear-gradient(135deg, #006AFF, #00B2FF);
+      border: none;
+      color: white;
+      border-radius: 10px;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .add-event button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #0059d6, #009de6);
+    }
+
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>MediTask</h1>
+        <div class = "nav-buttons">
+            <button class="nav-btn active" onclick="location.href='/day'">Appointment</button>
+            <button class="nav-btn" onclick="location.href='/table'">Patient</button>
+            <button class="nav-btn" onclick="location.href='/home'">Profile</button>
+            <button class="nav-btn" onclick="location.href='/login'">Logout</button>
+        </div>
+    </nav>
+<div class="calendar-container">
+    <div class="calendar-section">
+      <h1 class ="calendar-h1">Appointments</h1>
+      <div class="calendar-header">
+        <button id="prevMonth">◀</button>
+        <div id="monthYear"></div>
+        <button id="nextMonth">▶</button>
+      </div>
+
+      <button class="today-btn" id="todayBtn">Go to Today</button>
+
+      <div class="calendar" id="calendar"></div>
+    </div>
+
+    <div class="event-section" id="eventSection">
+      <h3>Appointment on <span id="selectedDateLabel">Select a date</span></h3>
+      <div id="eventList"></div>
+      <div class="add-event">
+        <input type="time" id="eventTime" />
+        <input type="text" id="eventInput" placeholder="Add new appointment..." />
+        <button id="addEventBtn">Add Appointment</button>
+      </div>
+    </div>
+  </div>
+    
+  <script>
+    const calendar = document.getElementById("calendar");
+    const monthYear = document.getElementById("monthYear");
+    const prevMonth = document.getElementById("prevMonth");
+    const nextMonth = document.getElementById("nextMonth");
+    const todayBtn = document.getElementById("todayBtn");
+    const eventList = document.getElementById("eventList");
+    const selectedDateLabel = document.getElementById("selectedDateLabel");
+    const eventInput = document.getElementById("eventInput");
+    const eventTime = document.getElementById("eventTime");
+    const addEventBtn = document.getElementById("addEventBtn");
+
+    let date = new Date();
+    let selectedDate = null;
+    const events = {};
+
+    function renderCalendar() {
+      calendar.classList.add("fade-out");
+      setTimeout(() => {
+        calendar.innerHTML = "";
+        const year = date.getFullYear();
+        const month = date.getMonth();
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const monthNames = [
+          "January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ];
+
+        monthYear.textContent = `${monthNames[month]} ${year}`;
+
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        dayNames.forEach(d => {
+          const div = document.createElement("div");
+          div.classList.add("day-name");
+          div.textContent = d;
+          calendar.appendChild(div);
+        });
+
+        for (let i = 0; i < firstDay; i++) {
+          const empty = document.createElement("div");
+          calendar.appendChild(empty);
+        }
+
+        const today = new Date();
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const div = document.createElement("div");
+          div.classList.add("day");
+          div.textContent = day;
+
+          const key = `${year}-${month + 1}-${day}`;
+          if (events[key] && events[key].length > 0) {
+            const dot = document.createElement("div");
+            dot.classList.add("indicator");
+            div.appendChild(dot);
+          }
+
+          if (
+            today.getFullYear() === year &&
+            today.getMonth() === month &&
+            today.getDate() === day
+          ) {
+            div.classList.add("today");
+          }
+
+          if (selectedDate === key) {
+            div.classList.add("selected");
+          }
+
+          div.addEventListener("click", () => {
+            selectedDate = key;
+            updateEventSection();
+            renderCalendar();
+          });
+
+          calendar.appendChild(div);
+        }
+        calendar.classList.remove("fade-out");
+      }, 200);
+    }
+
+    function updateEventSection() {
+      eventList.classList.add("fade-out");
+      setTimeout(() => {
+        eventList.innerHTML = "";
+        if (!selectedDate) {
+          selectedDateLabel.textContent = "Select a date";
+          eventList.classList.remove("fade-out");
+          return;
+        }
+
+        const [y, m, d] = selectedDate.split("-");
+        selectedDateLabel.textContent = `${d}/${m}/${y}`;
+
+        if (!events[selectedDate] || events[selectedDate].length === 0) {
+          eventList.innerHTML = "<p>No events yet.</p>";
+          eventList.classList.remove("fade-out");
+          return;
+        }
+
+        events[selectedDate].sort((a, b) => a.time.localeCompare(b.time));
+
+        events[selectedDate].forEach((e, i) => {
+          const eventDiv = document.createElement("div");
+          eventDiv.classList.add("event");
+          eventDiv.innerHTML = `
+            <div>
+              <time>${e.time}</time>${e.text}
+            </div>
+            <button class="delete-btn" data-index="${i}">🗑</button>
+          `;
+
+          eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
+            eventDiv.classList.add("removing");
+            setTimeout(() => {
+              events[selectedDate].splice(i, 1);
+              if (events[selectedDate].length === 0) delete events[selectedDate];
+              updateEventSection();
+              renderCalendar();
+            }, 300);
+          });
+
+          eventList.appendChild(eventDiv);
+        });
+        eventList.classList.remove("fade-out");
+      }, 200);
+    }
+
+    addEventBtn.addEventListener("click", () => {
+      const text = eventInput.value.trim();
+      const time = eventTime.value.trim();
+      if (!selectedDate) {
+        alert("Please select a date first!");
+        return;
+      }
+      if (text === "" || time === "") {
+        alert("Please enter both time and event description.");
+        return;
+      }
+
+      if (!events[selectedDate]) events[selectedDate] = [];
+      events[selectedDate].push({ time, text });
+      eventInput.value = "";
+      eventTime.value = "";
+      updateEventSection();
+      renderCalendar();
+    });
+
+    prevMonth.addEventListener("click", () => {
+      date.setMonth(date.getMonth() - 1);
+      renderCalendar();
+    });
+
+    nextMonth.addEventListener("click", () => {
+      date.setMonth(date.getMonth() + 1);
+      renderCalendar();
+    });
+
+    todayBtn.addEventListener("click", () => {
+      date = new Date();
+      selectedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+      renderCalendar();
+      updateEventSection();
+    });
+
+    renderCalendar();
+  </script>
+    
+</body>
+</html>
